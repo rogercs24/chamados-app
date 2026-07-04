@@ -1,0 +1,6 @@
+node_modules/
+.env
+src/database/chamados.json
+src/database/users.json
+src/database/respostas.json
+uploads/

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path . -Recurse -Directory | Where-Object { $_.FullName -notmatch 'node_modules' } | Select-Object -ExpandProperty FullName)",
+      "PowerShell(Get-ChildItem -Path . -Recurse -File | Where-Object { $_.FullName -notmatch 'node_modules' } | Select-Object -ExpandProperty FullName)",
+      "PowerShell(Write-Output \"node: $\\(node -v 2>$null\\)\"; Write-Output \"pnpm: $\\(pnpm -v 2>$null\\)\"; Write-Output \"npm: $\\(npm -v 2>$null\\)\"; Write-Output \"git: $\\(git --version 2>$null\\)\"; Write-Output \"docker: $\\(docker -v 2>$null\\)\")",
+      "PowerShell(corepack enable pnpm 2>$null; corepack prepare pnpm@9.15.0 --activate 2>$null; Write-Output \"pnpm: $\\(pnpm -v 2>$null\\)\")",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"Name='node.exe'\")",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue)",
+      "PowerShell(Stop-Process -Id 14828, 18952 -Force -ErrorAction SilentlyContinue)",
+      "PowerShell(Move-Item -Path backend -Destination legacy\\\\backend)"
+    ]
+  }
+}

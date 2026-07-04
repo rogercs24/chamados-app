@@ -1,0 +1,22 @@
+{
+  "name": "chamados-saas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma de Chamados SaaS multi-tenant (NestJS + Next.js + Prisma + MySQL)",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "infra:up": "docker compose up -d mysql redis adminer mailhog",
+    "infra:down": "docker compose down"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3"
+  }
+}

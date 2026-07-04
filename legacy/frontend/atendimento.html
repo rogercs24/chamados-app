@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Chamados - Sinka</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/topbar.css">
+  <link rel="stylesheet" href="css/gestao.css">
+</head>
+<body>
+  <div id="topbar-container"></div>
+
+  <main class="container">
+    <section class="card">
+      <div class="lista-header">
+        <h2 id="titulo-pagina">Chamados</h2>
+        <button id="btn-atualizar" class="btn-secundario">Atualizar</button>
+      </div>
+      <div id="lista-atendimento" class="lista-gestao">
+        <p class="vazio">Carregando...</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/topbar.js"></script>
+  <script>
+    Auth.exigirLogin();
+    const usuario = Auth.getUsuario();
+    if (!usuario || (usuario.papel !== 'atendente' && usuario.papel !== 'admin')) {
+      window.location.href = 'index.html';
+    }
+    renderizarTopbar('atendimento');
+
+    document.getElementById('titulo-pagina').textContent =
+      usuario.papel === 'admin' ? 'Todos os chamados' : `Chamados — ${usuario.area}`;
+
+    const listaEl = document.getElementById('lista-atendimento');
+    const btnAtualizar = document.getElementById('btn-atualizar');
+
+    const LABELS_STATUS = {
+      triagem: 'Aguardando triagem',
+      aberto: 'Aberto',
+      em_andamento: 'Em andamento',
+      resolvido: 'Resolvido',
+      fechado: 'Fechado'
+    };
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    async function carregar() {
+      listaEl.innerHTML = '<p class="vazio">Carregando...</p>';
+      try {
+        const res = await Auth.fetchAutenticado(`${API_BASE}/chamados`);
+        const chamados = (await res.json()).filter(c => c.status !== 'triagem');
+        renderizar(chamados);
+      } catch (err) {
+        listaEl.innerHTML = '<p class="vazio">Erro ao carregar chamados.</p>';
+      }
+    }
+
+    function renderizar(chamados) {
+      if (!chamados.length) {
+        listaEl.innerHTML = '<p class="vazio">Nenhum chamado por aqui no momento.</p>';
+        return;
+      }
+
+      listaEl.innerHTML = chamados.map(c => `
+        <div class="item-gestao">
+          <h3>${escapeHtml(c.titulo)}</h3>
+          <p class="meta">
+            Solicitante: ${escapeHtml(c.solicitante)} · ${c.criado_em}
+            ${c.area ? ` · Área: ${escapeHtml(c.area)}` : ''}
+          </p>
+          <div class="tags" style="margin-bottom:10px;">
+            ${c.prioridade ? `<span class="tag prioridade-${c.prioridade}">${c.prioridade}</span>` : ''}
+            <span class="tag status-${c.status}">${LABELS_STATUS[c.status] || c.status}</span>
+          </div>
+          <p class="descricao">${escapeHtml(c.descricao)}</p>
+          <a class="link-ver" href="chamado.html?id=${c.id}">Ver e responder →</a>
+        </div>
+      `).join('');
+    }
+
+    btnAtualizar.addEventListener('click', carregar);
+    carregar();
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+.topbar {
+  background: var(--cor-escura);
+  color: #fff;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-brand img {
+  height: 36px;
+  max-width: 160px;
+  object-fit: contain;
+  display: block;
+}
+
+.topbar-brand .logo-texto {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.topbar-brand h1 {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.topbar-nav {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 0.9rem;
+}
+
+.topbar-nav a {
+  color: #cbd2d9;
+  text-decoration: none;
+}
+
+.topbar-nav a:hover,
+.topbar-nav a.ativo {
+  color: #fff;
+}
+
+.topbar-nav .usuario-info {
+  color: #9aa5b1;
+}
+
+.topbar-nav button {
+  background: transparent;
+  border: 1px solid #4b5563;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.topbar-nav button:hover {
+  background: #374151;
+}

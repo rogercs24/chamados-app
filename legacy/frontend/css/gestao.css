@@ -1,0 +1,148 @@
+.lista-gestao {
+  display: grid;
+  gap: 14px;
+}
+
+.item-gestao {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.meta {
+  font-size: 0.82rem;
+  color: #6b7280;
+  margin-bottom: 8px;
+}
+
+.descricao {
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 12px;
+  white-space: pre-wrap;
+}
+
+.item-gestao h3 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.form-triagem {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 12px;
+}
+
+.form-triagem .campo {
+  margin-bottom: 0;
+  min-width: 160px;
+}
+
+.form-triagem button {
+  height: 42px;
+}
+
+.link-ver {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: var(--cor-primaria-escura);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Página de detalhe do chamado */
+.detalhe-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.detalhe-status-controle select {
+  font-size: 0.85rem;
+  padding: 8px 10px;
+}
+
+.thread {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.thread-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: #f9fafb;
+}
+
+.thread-item.autor-atendente,
+.thread-item.autor-admin {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.thread-item .thread-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.thread-item .thread-cabecalho strong {
+  color: #1f2933;
+}
+
+.thread-item .thread-texto {
+  font-size: 0.9rem;
+  color: #1f2933;
+  white-space: pre-wrap;
+}
+
+.thread-anexos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.thread-anexos a {
+  font-size: 0.8rem;
+  color: var(--cor-primaria-escura);
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #dbeafe;
+  border-radius: 6px;
+  padding: 5px 10px;
+}
+
+.thread-anexos img {
+  max-width: 160px;
+  max-height: 120px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  display: block;
+}
+
+.form-resposta {
+  margin-top: 18px;
+  border-top: 1px solid #f3f4f6;
+  padding-top: 16px;
+}
+
+.form-resposta textarea {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.form-resposta input[type="file"] {
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}

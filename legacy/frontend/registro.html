@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar conta - Sinka</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <div class="auth-card-banner"><span class="ponto"></span> Portal de Chamados</div>
+      <div class="auth-card-body">
+        <h2>Criar conta</h2>
+      <p class="auth-subtitulo">Cadastre-se para abrir chamados ou atender solicitações</p>
+
+      <form id="form-registro">
+        <div class="campo">
+          <label for="nome">Nome completo</label>
+          <input type="text" id="nome" required>
+        </div>
+
+        <div class="campo">
+          <label for="email">E-mail</label>
+          <input type="email" id="email" required>
+        </div>
+
+        <div class="campo">
+          <label for="senha">Senha</label>
+          <input type="password" id="senha" minlength="6" required>
+          <small>Mínimo de 6 caracteres</small>
+        </div>
+
+        <div class="campo">
+          <label for="papel">Tipo de conta</label>
+          <select id="papel">
+            <option value="solicitante" selected>Solicitante (abre chamados)</option>
+            <option value="atendente">Atendente (responde chamados de uma área)</option>
+            <option value="admin">Administrador (faz a triagem dos chamados)</option>
+          </select>
+          <small id="nota-admin" style="display:none;">Só funciona se ainda não existir nenhum admin no sistema. Depois disso, novas contas admin só podem ser criadas por um admin já logado.</small>
+        </div>
+
+        <div class="campo campo-area" id="campo-area">
+          <label for="area">Área de atuação</label>
+          <select id="area"></select>
+        </div>
+
+        <p id="erro-registro" class="erro-msg"></p>
+
+        <button type="submit">Criar conta</button>
+      </form>
+
+      <p class="auth-rodape">Já tem conta? <a href="login.html">Entrar</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/areas.js"></script>
+  <script>
+    if (Auth.estaLogado()) window.location.href = 'index.html';
+
+    const form = document.getElementById('form-registro');
+    const erroEl = document.getElementById('erro-registro');
+    const papelEl = document.getElementById('papel');
+    const campoAreaEl = document.getElementById('campo-area');
+    const areaEl = document.getElementById('area');
+
+    areaEl.innerHTML = AREAS.map(a => `<option value="${a}">${a}</option>`).join('');
+
+    const notaAdminEl = document.getElementById('nota-admin');
+
+    function atualizarCamposPorPapel() {
+      const papel = papelEl.value;
+      campoAreaEl.classList.toggle('visivel', papel === 'atendente');
+      notaAdminEl.style.display = papel === 'admin' ? 'block' : 'none';
+    }
+
+    papelEl.addEventListener('change', atualizarCamposPorPapel);
+    atualizarCamposPorPapel();
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      erroEl.textContent = '';
+
+      const dados = {
+        nome: document.getElementById('nome').value,
+        email: document.getElementById('email').value,
+        senha: document.getElementById('senha').value,
+        papel: papelEl.value,
+        area: papelEl.value === 'atendente' ? areaEl.value : undefined
+      };
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/registrar`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dados)
+        });
+
+        const resposta = await res.json();
+
+        if (!res.ok) {
+          erroEl.textContent = resposta.erro || 'Erro ao criar conta';
+          return;
+        }
+
+        Auth.salvarSessao(resposta.token, resposta.usuario);
+        window.location.href = 'index.html';
+      } catch (err) {
+        erroEl.textContent = 'Não foi possível conectar ao servidor. Ele está rodando?';
+      }
+    });
+  </script>
+</body>
+</html>

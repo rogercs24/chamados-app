@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chamado - Sinka</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/topbar.css">
+  <link rel="stylesheet" href="css/gestao.css">
+</head>
+<body>
+  <div id="topbar-container"></div>
+
+  <main class="container">
+    <section class="card" id="card-chamado">
+      <p class="vazio">Carregando chamado...</p>
+    </section>
+
+    <section class="card">
+      <h2>Histórico</h2>
+      <div id="thread" class="thread">
+        <p class="vazio">Carregando...</p>
+      </div>
+
+      <form id="form-resposta" class="form-resposta" style="display:none;">
+        <label for="texto-resposta">Responder</label>
+        <textarea id="texto-resposta" rows="3" placeholder="Escreva sua resposta..."></textarea>
+        <input type="file" id="arquivos-resposta" multiple>
+        <button type="submit">Enviar resposta</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/topbar.js"></script>
+  <script>
+    Auth.exigirLogin();
+    renderizarTopbar(null);
+
+    const usuario = Auth.getUsuario();
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+
+    const cardChamadoEl = document.getElementById('card-chamado');
+    const threadEl = document.getElementById('thread');
+    const formRespostaEl = document.getElementById('form-resposta');
+    const textoRespostaEl = document.getElementById('texto-resposta');
+    const arquivosRespostaEl = document.getElementById('arquivos-resposta');
+
+    const LABELS_STATUS = {
+      triagem: 'Aguardando triagem',
+      aberto: 'Aberto',
+      em_andamento: 'Em andamento',
+      resolvido: 'Resolvido',
+      fechado: 'Fechado'
+    };
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function ehImagem(tipo) {
+      return tipo && tipo.startsWith('image/');
+    }
+
+    async function carregarChamado() {
+      try {
+        const res = await Auth.fetchAutenticado(`${API_BASE}/chamados/${id}`);
+        if (!res.ok) {
+          cardChamadoEl.innerHTML = '<p class="vazio">Chamado não encontrado ou sem acesso.</p>';
+          return;
+        }
+        const c = await res.json();
+        renderizarChamado(c);
+
+        const podeResponder = (usuario.papel === 'admin') ||
+          (usuario.papel === 'atendente' && c.area === usuario.area);
+
+        formRespostaEl.style.display = podeResponder ? 'block' : 'none';
+      } catch (err) {
+        cardChamadoEl.innerHTML = '<p class="vazio">Erro ao carregar chamado.</p>';
+      }
+    }
+
+    function renderizarChamado(c) {
+      const podeMudarStatus = (usuario.papel === 'admin') ||
+        (usuario.papel === 'atendente' && c.area === usuario.area);
+
+      cardChamadoEl.innerHTML = `
+        <div class="detalhe-topo">
+          <div>
+            <h2>${escapeHtml(c.titulo)}</h2>
+            <p class="meta">Solicitante: ${escapeHtml(c.solicitante)} · Aberto em ${c.criado_em}</p>
+          </div>
+          <div class="tags">
+            ${c.prioridade ? `<span class="tag prioridade-${c.prioridade}">${c.prioridade}</span>` : ''}
+            ${c.area ? `<span class="tag area">${escapeHtml(c.area)}</span>` : ''}
+            <span class="tag status-${c.status}">${LABELS_STATUS[c.status] || c.status}</span>
+          </div>
+        </div>
+        <p class="descricao">${escapeHtml(c.descricao)}</p>
+        ${podeMudarStatus && c.status !== 'triagem' ? `
+          <div class="detalhe-status-controle">
+            <label>Alterar status:</label>
+            <select id="select-status">
+              <option value="aberto" ${c.status === 'aberto' ? 'selected' : ''}>Aberto</option>
+              <option value="em_andamento" ${c.status === 'em_andamento' ? 'selected' : ''}>Em andamento</option>
+              <option value="resolvido" ${c.status === 'resolvido' ? 'selected' : ''}>Resolvido</option>
+              <option value="fechado" ${c.status === 'fechado' ? 'selected' : ''}>Fechado</option>
+            </select>
+          </div>
+        ` : ''}
+      `;
+
+      const selectStatus = document.getElementById('select-status');
+      if (selectStatus) {
+        selectStatus.addEventListener('change', async () => {
+          try {
+            const res = await Auth.fetchAutenticado(`${API_BASE}/chamados/${id}/status`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status: selectStatus.value })
+            });
+            if (!res.ok) {
+              const erro = await res.json().catch(() => ({}));
+              alert(erro.erro || 'Erro ao atualizar status');
+            }
+          } catch (err) {
+            alert('Erro ao atualizar status.');
+          }
+        });
+      }
+    }
+
+    async function carregarThread() {
+      try {
+        const res = await Auth.fetchAutenticado(`${API_BASE}/chamados/${id}/respostas`);
+        const respostas = await res.json();
+        renderizarThread(respostas);
+      } catch (err) {
+        threadEl.innerHTML = '<p class="vazio">Erro ao carregar histórico.</p>';
+      }
+    }
+
+    function renderizarThread(respostas) {
+      if (!respostas.length) {
+        threadEl.innerHTML = '<p class="vazio">Nenhuma resposta ainda.</p>';
+        return;
+      }
+
+      threadEl.innerHTML = respostas.map(r => `
+        <div class="thread-item autor-${r.autorPapel}">
+          <div class="thread-cabecalho">
+            <strong>${escapeHtml(r.autorNome)}</strong>
+            <span>${r.criado_em}</span>
+          </div>
+          ${r.texto ? `<div class="thread-texto">${escapeHtml(r.texto)}</div>` : ''}
+          ${r.anexos && r.anexos.length ? `
+            <div class="thread-anexos">
+              ${r.anexos.map(a => ehImagem(a.tipo)
+                ? `<a href="${API_BASE.replace('/api','')}${a.caminho}" target="_blank"><img src="${API_BASE.replace('/api','')}${a.caminho}" alt="${escapeHtml(a.nomeOriginal)}"></a>`
+                : `<a href="${API_BASE.replace('/api','')}${a.caminho}" target="_blank">📎 ${escapeHtml(a.nomeOriginal)}</a>`
+              ).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
+
+    formRespostaEl.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const texto = textoRespostaEl.value.trim();
+      const arquivos = arquivosRespostaEl.files;
+
+      if (!texto && arquivos.length === 0) {
+        alert('Escreva uma resposta ou anexe ao menos um arquivo.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('texto', texto);
+      for (const arquivo of arquivos) {
+        formData.append('arquivos', arquivo);
+      }
+
+      try {
+        const res = await Auth.fetchAutenticado(`${API_BASE}/chamados/${id}/respostas`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!res.ok) {
+          const erro = await res.json().catch(() => ({}));
+          alert(erro.erro || 'Erro ao enviar resposta');
+          return;
+        }
+
+        textoRespostaEl.value = '';
+        arquivosRespostaEl.value = '';
+        carregarThread();
+      } catch (err) {
+        alert('Erro ao enviar resposta.');
+      }
+    });
+
+    if (!id) {
+      cardChamadoEl.innerHTML = '<p class="vazio">Chamado não informado.</p>';
+    } else {
+      carregarChamado();
+      carregarThread();
+    }
+  </script>
+</body>
+</html>

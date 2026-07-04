@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ - Sinka</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/topbar.css">
+  <link rel="stylesheet" href="css/faq.css">
+</head>
+<body>
+  <div id="topbar-container"></div>
+
+  <main class="container">
+    <section class="card">
+      <h2>Perguntas frequentes</h2>
+      <p class="faq-intro">Consulte abaixo antes de abrir um chamado. Se seu problema não estiver aqui, abra um chamado normalmente.</p>
+
+      <input type="text" id="busca-faq" class="busca-faq" placeholder="Buscar por palavra-chave (ex: leilão, credenciamento, pagamento)...">
+
+      <div id="faq-lista" class="faq-lista"></div>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/topbar.js"></script>
+  <script src="js/faqData.js"></script>
+  <script>
+    Auth.exigirLogin();
+    renderizarTopbar('faq');
+
+    const listaEl = document.getElementById('faq-lista');
+    const buscaEl = document.getElementById('busca-faq');
+
+    function renderizarPorCategoria(itens) {
+      const categorias = [...new Set(itens.map(i => i.categoria))];
+
+      listaEl.innerHTML = categorias.map(categoria => `
+        <h3 class="faq-categoria">${categoria}</h3>
+        <div class="faq-grupo">
+          ${itens.filter(i => i.categoria === categoria).map(item => `
+            <details class="faq-item">
+              <summary>${item.pergunta}</summary>
+              <p>${item.resposta}</p>
+            </details>
+          `).join('')}
+        </div>
+      `).join('');
+    }
+
+    buscaEl.addEventListener('input', () => {
+      const termo = buscaEl.value.trim();
+      if (!termo) {
+        renderizarPorCategoria(FAQ_DATA);
+        return;
+      }
+      const resultado = buscarFaq(termo);
+      listaEl.innerHTML = resultado.length
+        ? resultado.map(item => `
+            <details class="faq-item" open>
+              <summary>${item.pergunta}</summary>
+              <p>${item.resposta}</p>
+            </details>
+          `).join('')
+        : '<p class="vazio">Nenhuma pergunta encontrada para esse termo.</p>';
+    });
+
+    renderizarPorCategoria(FAQ_DATA);
+  </script>
+</body>
+</html>

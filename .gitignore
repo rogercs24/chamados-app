@@ -1,0 +1,41 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# builds
+dist/
+build/
+.next/
+out/
+*.tsbuildinfo
+
+# env / secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# tests / coverage
+coverage/
+.nyc_output/
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# uploads / runtime
+apps/api/uploads/
+legacy/backend/uploads/
+legacy/backend/node_modules/
+legacy/backend/src/database/*.db
+
+# turbo
+.turbo/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# empty locked dir left by OneDrive during migration (harmless)
+/backend/

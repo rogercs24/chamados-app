@@ -1,0 +1,103 @@
+// Schema — Fase 1 (auth, tenancy, auditoria).
+// Modelos de domínio (Client, Ticket, Attachment, ImportJob) entram nas fases seguintes.
+// Regra multi-tenant: toda tabela de negócio carrega `tenantId` (ver ADR-0001).
+// Identidade: e-mail globalmente único (ver ADR-0004).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Papel {
+  SUPER_ADMIN // gestor do grupo — cria tenants e admins
+  ADMIN
+  TRIAGEM
+  TI
+  TRADE
+  OPERACOES
+  SOLICITANTE
+}
+
+/// Empresa (tenant). Raiz do isolamento de dados.
+model Tenant {
+  id           String   @id @default(cuid())
+  nome         String
+  slug         String   @unique
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  usuarios User[]
+
+  @@map("tenants")
+}
+
+model User {
+  id         String  @id @default(cuid())
+  tenantId   String
+  tenant     Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nome       String
+  email      String  @unique
+  senhaHash  String?
+  papel      Papel   @default(SOLICITANTE)
+  ativo      Boolean @default(true)
+
+  // OAuth
+  googleId String? @unique
+  githubId String? @unique
+
+  // MFA / TOTP
+  mfaEnabled Boolean @default(false)
+  mfaSecret  String?
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  refreshTokens RefreshToken[]
+
+  @@index([tenantId])
+  @@map("users")
+}
+
+/// Refresh token opaco, guardado só como hash. Rotativo, com detecção de reuso.
+model RefreshToken {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash        String    @unique
+  family           String
+  expiraEm         DateTime
+  revogadoEm       DateTime?
+  substituidoPorId String?
+  userAgent        String?
+  ip               String?
+  criadoEm         DateTime  @default(now())
+
+  @@index([userId])
+  @@index([family])
+  @@map("refresh_tokens")
+}
+
+/// Trilha de auditoria append-only. Escopo de tenant explícito (não passa pela
+/// extension de isolamento — eventos como login ocorrem antes do contexto).
+model AuditLog {
+  id         String   @id @default(cuid())
+  tenantId   String?
+  actorId    String?
+  acao       String
+  entidade   String?
+  entidadeId String?
+  metadata   Json?
+  ip         String?
+  userAgent  String?
+  criadoEm   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([actorId])
+  @@index([acao])
+  @@map("audit_logs")
+}

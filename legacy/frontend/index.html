@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sinka - Central de Chamados</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/topbar.css">
+</head>
+<body>
+  <div id="topbar-container"></div>
+
+  <main class="container">
+    <section class="card">
+      <h2>Abrir novo chamado</h2>
+
+      <div id="sugestoes-faq" class="sugestoes-faq" style="display:none;">
+        <p class="sugestoes-titulo">💡 Encontramos possíveis respostas no FAQ para o que você digitou:</p>
+        <div id="sugestoes-faq-lista"></div>
+      </div>
+
+      <form id="form-chamado">
+        <div class="campo">
+          <label for="titulo">Título</label>
+          <input type="text" id="titulo" name="titulo" required autocomplete="off">
+        </div>
+
+        <div class="campo">
+          <label for="descricao">Descrição</label>
+          <textarea id="descricao" name="descricao" rows="4" required></textarea>
+        </div>
+
+        <div class="campo campo-checkbox">
+          <label>
+            <input type="checkbox" id="confirmar-faq" required>
+            Já consultei o FAQ e não encontrei a solução para o meu problema
+          </label>
+          <span id="status-consulta-faq" class="status-consulta-faq"></span>
+        </div>
+
+        <button type="submit" id="btn-abrir-chamado" disabled>Abrir chamado</button>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="lista-header">
+        <h2>Meus chamados</h2>
+        <button id="btn-atualizar" class="btn-secundario">Atualizar</button>
+      </div>
+      <div id="lista-chamados" class="lista-chamados">
+        <p class="vazio">Carregando chamados...</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="js/auth.js"></script>
+  <script src="js/topbar.js"></script>
+  <script src="js/faqData.js"></script>
+  <script>
+    Auth.exigirLogin();
+
+    const usuarioLogado = Auth.getUsuario();
+    if (usuarioLogado && usuarioLogado.papel === 'admin') {
+      window.location.href = 'triagem.html';
+    } else if (usuarioLogado && usuarioLogado.papel === 'atendente') {
+      window.location.href = 'atendimento.html';
+    } else {
+      renderizarTopbar('inicio');
+    }
+  </script>
+  <script src="js/script.js"></script>
+</body>
+</html>

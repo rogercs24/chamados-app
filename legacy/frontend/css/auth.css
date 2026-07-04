@@ -1,0 +1,117 @@
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: url('../assets/login-bg.jpg') center top / cover no-repeat, var(--cor-escura);
+  padding: 40px 16px;
+  position: relative;
+}
+
+.auth-wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(12, 30, 18, 0.82) 0%, rgba(12, 30, 18, 0.25) 40%, rgba(12, 30, 18, 0) 62%);
+}
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.auth-card-banner {
+  background: var(--cor-escura);
+  color: #fff;
+  text-align: center;
+  padding: 12px 16px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.auth-card-banner .ponto {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--cor-primaria-clara);
+  display: inline-block;
+}
+
+.auth-card-body {
+  padding: 30px 32px 28px;
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.auth-subtitulo {
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.85rem;
+  margin-bottom: 22px;
+}
+
+.auth-card .campo small {
+  color: #9ca3af;
+  font-size: 0.75rem;
+}
+
+.auth-card button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+}
+
+.auth-rodape {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.auth-rodape a {
+  color: var(--cor-primaria-escura);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.erro-msg {
+  color: #b91c1c;
+  font-size: 0.85rem;
+  min-height: 1.2em;
+  margin-bottom: 4px;
+}
+
+.campo-area {
+  display: none;
+}
+
+.campo-area.visivel {
+  display: flex;
+}
+
+/* Em telas estreitas a imagem fica muito cortada nas laterais;
+   usa um degradê verde sólido no lugar para manter a legibilidade */
+@media (max-width: 640px) {
+  .auth-wrapper {
+    background: linear-gradient(160deg, var(--cor-escura) 0%, var(--cor-primaria-escura) 100%);
+  }
+
+  .auth-wrapper::before {
+    display: none;
+  }
+}
