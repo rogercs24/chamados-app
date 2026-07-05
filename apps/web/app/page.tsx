@@ -1,16 +1,20 @@
-export default function HomePage() {
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../lib/auth';
+
+export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading) router.replace(user ? '/dashboard' : '/login');
+  }, [user, loading, router]);
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col items-center justify-center gap-6 p-8 text-center">
-      <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-medium uppercase tracking-wide text-slate-600">
-        Fase 0 — Fundação
-      </span>
-      <h1 className="text-4xl font-bold tracking-tight">
-        Plataforma de Chamados
-      </h1>
-      <p className="max-w-prose text-slate-600">
-        Área administrativa multi-tenant. Autenticação, RBAC e os módulos de
-        domínio chegam nas próximas fases.
-      </p>
-    </main>
+    <div className="grid min-h-screen place-items-center text-slate-400">
+      Carregando…
+    </div>
   );
 }
