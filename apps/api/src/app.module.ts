@@ -13,6 +13,7 @@ import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { UsersModule } from './modules/users/users.module';
+import { ClientsModule } from './modules/clients/clients.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -52,6 +53,7 @@ import { TenantContextMiddleware } from './common/context/tenant-context.middlew
     HealthModule,
     AuthModule,
     UsersModule,
+    ClientsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

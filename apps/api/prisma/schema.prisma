@@ -83,6 +83,31 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+/// Cliente (empresa atendida pelo tenant). Isolado por tenantId.
+model Client {
+  id           String    @id @default(cuid())
+  tenantId     String
+  cnpj         String
+  razaoSocial  String
+  nomeFantasia String?
+  email        String?
+  telefone     String?
+  cep          String?
+  logradouro   String?
+  numero       String?
+  complemento  String?
+  bairro       String?
+  cidade       String?
+  uf           String?
+  criadoEm     DateTime  @default(now())
+  atualizadoEm DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  @@unique([tenantId, cnpj])
+  @@index([tenantId])
+  @@map("clients")
+}
+
 /// Trilha de auditoria append-only. Escopo de tenant explícito (não passa pela
 /// extension de isolamento — eventos como login ocorrem antes do contexto).
 model AuditLog {

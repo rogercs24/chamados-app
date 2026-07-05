@@ -13,6 +13,9 @@ export const AuditAction = {
   MFA_ENABLED: 'auth.mfa_enabled',
   MFA_DISABLED: 'auth.mfa_disabled',
   OAUTH_LOGIN: 'auth.oauth_login',
+  CLIENT_CREATED: 'client.created',
+  CLIENT_UPDATED: 'client.updated',
+  CLIENT_DELETED: 'client.deleted',
 } as const;
 
 export type AuditActionType = (typeof AuditAction)[keyof typeof AuditAction];
