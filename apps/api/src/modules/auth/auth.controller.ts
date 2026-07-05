@@ -67,6 +67,23 @@ export class AuthController {
     res.clearCookie(REFRESH_COOKIE, { path: '/api/auth' });
   }
 
+  /**
+   * Conclui um login OAuth redirecionando para o frontend com os tokens no
+   * fragmento (#) da URL — o fragmento não é enviado ao servidor nem gravado em
+   * logs/Referer. A página /auth/callback do web lê e guarda os tokens.
+   */
+  private oauthSuccessRedirect(
+    res: Response,
+    tokens: { accessToken: string; refreshToken: string },
+  ): void {
+    const base = process.env.FRONTEND_URL ?? 'http://localhost:3000';
+    const frag = new URLSearchParams({
+      access: tokens.accessToken,
+      refresh: tokens.refreshToken,
+    }).toString();
+    res.redirect(`${base}/auth/callback#${frag}`);
+  }
+
   @Public()
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Cria empresa (tenant) + primeiro SUPER_ADMIN' })
@@ -175,16 +192,13 @@ export class AuthController {
   @Public()
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
-  async googleCallback(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async googleCallback(@Req() req: Request, @Res() res: Response) {
     const resultado = await this.oauthLoginUseCase.execute(
       req.user as OAuthProfile,
       this.meta(req),
     );
     this.setRefreshCookie(res, resultado.refreshToken);
-    return resultado;
+    this.oauthSuccessRedirect(res, resultado);
   }
 
   @Public()
@@ -198,15 +212,12 @@ export class AuthController {
   @Public()
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
-  async githubCallback(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async githubCallback(@Req() req: Request, @Res() res: Response) {
     const resultado = await this.oauthLoginUseCase.execute(
       req.user as OAuthProfile,
       this.meta(req),
     );
     this.setRefreshCookie(res, resultado.refreshToken);
-    return resultado;
+    this.oauthSuccessRedirect(res, resultado);
   }
 }
