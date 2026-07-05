@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { FaqModule } from '../faq/faq.module';
 import { TicketsController } from './tickets.controller';
 import { TicketsRepository } from './tickets.repository';
 import { CreateTicketUseCase } from './use-cases/create-ticket.use-case';
@@ -10,6 +11,7 @@ import { RespondTicketUseCase } from './use-cases/respond-ticket.use-case';
 import { GetAttachmentUseCase } from './use-cases/get-attachment.use-case';
 
 @Module({
+  imports: [FaqModule],
   controllers: [TicketsController],
   providers: [
     TicketsRepository,

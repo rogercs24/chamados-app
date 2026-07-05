@@ -16,4 +16,10 @@ export class CreateTicketDto {
   @IsOptional()
   @IsString()
   clientId?: string;
+
+  @ApiProperty({
+    description: 'Token de uso único devolvido por POST /faq/consultar',
+  })
+  @IsString()
+  faqToken: string;
 }

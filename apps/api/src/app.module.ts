@@ -22,6 +22,7 @@ import { TicketsModule } from './modules/tickets/tickets.module';
 import { ImportsModule } from './modules/imports/imports.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { FaqModule } from './modules/faq/faq.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -81,6 +82,7 @@ import { TenantContextMiddleware } from './common/context/tenant-context.middlew
     UsersModule,
     ClientsModule,
     TicketsModule,
+    FaqModule,
     ImportsModule,
     DashboardModule,
     ReportsModule,
