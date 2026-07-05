@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/auth';
@@ -39,13 +40,24 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="hidden w-60 flex-col border-r border-slate-200 bg-white p-4 md:flex">
+    <div className="relative flex min-h-screen">
+      {/* Fundo Sinka (sutil, sob toda a área do app) */}
+      <div className="fixed inset-0 -z-10 bg-slate-100">
+        <Image
+          src="/sinka-bg.jpg"
+          alt=""
+          fill
+          className="object-cover opacity-20"
+        />
+        <div className="absolute inset-0 bg-slate-100/80" />
+      </div>
+
+      <aside className="hidden w-60 flex-col border-r border-slate-200 bg-white/85 p-4 backdrop-blur md:flex">
         <div className="mb-6 flex items-center gap-2 px-2">
-          <div className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-sm font-bold text-white">
+          <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#7cb342] text-sm font-bold text-white">
             C
           </div>
-          <span className="font-semibold text-slate-900">Chamados</span>
+          <span className="font-semibold text-slate-900">Chamados Sinka</span>
         </div>
         <nav className="flex-1 space-y-1">
           {itens.map((n) => {
@@ -57,7 +69,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 className={cn(
                   'block rounded-lg px-3 py-2 text-sm font-medium transition',
                   ativo
-                    ? 'bg-indigo-50 text-indigo-700'
+                    ? 'bg-[#7cb342]/15 text-[#5a8a2c]'
                     : 'text-slate-600 hover:bg-slate-100',
                 )}
               >
@@ -69,7 +81,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-3">
+        <header className="flex items-center justify-between border-b border-slate-200 bg-white/85 px-6 py-3 backdrop-blur">
           <div className="md:hidden font-semibold">Chamados</div>
           <div className="ml-auto flex items-center gap-3">
             <div className="text-right">
