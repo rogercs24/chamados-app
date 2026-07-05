@@ -84,7 +84,9 @@ pnpm dev
   CNPJ/CEP, chamados com triagem/atendimento e visibilidade por área — 29 testes)
 - **Fase 3 — Assíncrono + tempo real + upload** ✅ (importação de planilhas
   CSV/XLSX via BullMQ, Socket.IO com adapter Redis, anexos em respostas)
-- **Próxima: Fase 4 — Dashboard de indicadores + relatórios**
+- **Fase 4 — Dashboard + relatórios** ✅ (indicadores por status/área/período e
+  tempo de resposta; geração assíncrona de relatório XLSX)
+- **Próxima: Fase 5 — Frontends (plataforma Next.js + landing)**
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a

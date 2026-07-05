@@ -20,6 +20,7 @@ import { ClientsModule } from './modules/clients/clients.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
 import { ImportsModule } from './modules/imports/imports.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ReportsModule } from './modules/reports/reports.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -80,6 +81,7 @@ import { TenantContextMiddleware } from './common/context/tenant-context.middlew
     TicketsModule,
     ImportsModule,
     DashboardModule,
+    ReportsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

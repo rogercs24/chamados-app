@@ -278,6 +278,7 @@ pnpm dev                      # api + web + landing via turbo
       (triagem/atendimento) — 29 testes, isolamento validado ao vivo
 - [x] Fase 3 — Assíncrono (BullMQ import CSV/XLSX) + tempo real (Socket.IO) +
       upload de anexos — os três validados ponta a ponta
-- [ ] Fase 4 — Dashboard + relatórios
+- [x] Fase 4 — Dashboard (status/área/série/tempo de resposta) + geração
+      assíncrona de relatório XLSX — validados ao vivo
 - [ ] Fase 5 — Frontend
 - [ ] Fase 6 — Testes, observabilidade, deploy, docs

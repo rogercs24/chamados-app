@@ -216,6 +216,22 @@ model ImportJob {
   @@map("import_jobs")
 }
 
+/// Job de geração de relatório (assíncrono). Reaproveita ImportStatus.
+model ReportJob {
+  id           String       @id @default(cuid())
+  tenantId     String
+  tipo         String
+  status       ImportStatus @default(PENDENTE)
+  caminho      String?
+  arquivoNome  String?
+  criadoPor    String
+  criadoEm     DateTime     @default(now())
+  atualizadoEm DateTime     @updatedAt
+
+  @@index([tenantId])
+  @@map("report_jobs")
+}
+
 /// Trilha de auditoria append-only. Escopo de tenant explícito (não passa pela
 /// extension de isolamento — eventos como login ocorrem antes do contexto).
 model AuditLog {
