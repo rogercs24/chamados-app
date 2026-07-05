@@ -34,5 +34,6 @@ import { OAuthLoginUseCase } from './use-cases/oauth-login.use-case';
     MfaUseCase,
     OAuthLoginUseCase,
   ],
+  exports: [PasswordService, TokenService],
 })
 export class AuthModule {}
