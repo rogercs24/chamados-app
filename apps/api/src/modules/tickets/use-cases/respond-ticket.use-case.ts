@@ -10,7 +10,15 @@ import { AuditService } from '../../audit/audit.service';
 import { AuditAction } from '../../audit/audit-actions';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user';
 import { RealtimeGateway } from '../../../infra/realtime/realtime.gateway';
+import { FileStorageService } from '../../../infra/storage/file-storage.service';
 import { podeAtuar } from '../ticket-access';
+
+export interface UploadedFileLike {
+  originalname: string;
+  mimetype: string;
+  size: number;
+  buffer: Buffer;
+}
 
 /** Resposta de atendente/gestão. A primeira resposta inicia o atendimento. */
 @Injectable()
@@ -19,9 +27,15 @@ export class RespondTicketUseCase {
     private readonly repo: TicketsRepository,
     private readonly audit: AuditService,
     private readonly realtime: RealtimeGateway,
+    private readonly storage: FileStorageService,
   ) {}
 
-  async execute(id: string, dto: CreateResponseDto, actor: AuthenticatedUser) {
+  async execute(
+    id: string,
+    dto: CreateResponseDto,
+    actor: AuthenticatedUser,
+    arquivos: UploadedFileLike[] = [],
+  ) {
     const ticket = await this.repo.findById(id);
     if (!ticket || !podeAtuar(ticket, actor)) {
       throw new NotFoundException('chamado não encontrado');
@@ -31,6 +45,22 @@ export class RespondTicketUseCase {
     }
 
     const resposta = await this.repo.createResponse(id, actor.id, dto.texto);
+
+    for (const arquivo of arquivos) {
+      const caminho = await this.storage.save(
+        actor.tenantId,
+        `responses/${resposta.id}`,
+        arquivo.originalname,
+        arquivo.buffer,
+      );
+      await this.repo.createAttachment({
+        responseId: resposta.id,
+        nomeOriginal: arquivo.originalname,
+        caminho,
+        mime: arquivo.mimetype,
+        tamanho: arquivo.size,
+      });
+    }
 
     const patch: Prisma.TicketUncheckedUpdateManyInput = {};
     if (!ticket.primeiraRespostaEm) patch.primeiraRespostaEm = new Date();

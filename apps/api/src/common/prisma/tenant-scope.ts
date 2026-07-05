@@ -9,6 +9,7 @@ export const TENANT_MODELS = new Set<string>([
   'Client',
   'Ticket',
   'TicketResponse',
+  'Attachment',
 ]);
 
 /** Operações onde injetamos `where.tenantId`. */

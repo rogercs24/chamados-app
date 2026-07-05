@@ -6,8 +6,18 @@ import {
   Patch,
   Post,
   Query,
+  Res,
+  UploadedFiles,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Response } from 'express';
 import { Papel } from '@prisma/client';
 
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -25,7 +35,11 @@ import { ListTicketsUseCase } from './use-cases/list-tickets.use-case';
 import { GetTicketUseCase } from './use-cases/get-ticket.use-case';
 import { TriageTicketUseCase } from './use-cases/triage-ticket.use-case';
 import { UpdateStatusUseCase } from './use-cases/update-status.use-case';
-import { RespondTicketUseCase } from './use-cases/respond-ticket.use-case';
+import {
+  RespondTicketUseCase,
+  UploadedFileLike,
+} from './use-cases/respond-ticket.use-case';
+import { GetAttachmentUseCase } from './use-cases/get-attachment.use-case';
 
 @ApiTags('tickets')
 @ApiBearerAuth()
@@ -38,6 +52,7 @@ export class TicketsController {
     private readonly triageTicket: TriageTicketUseCase,
     private readonly updateStatus: UpdateStatusUseCase,
     private readonly respondTicket: RespondTicketUseCase,
+    private readonly getAttachment: GetAttachmentUseCase,
   ) {}
 
   @ApiOperation({ summary: 'Abre um chamado (entra em triagem)' })
@@ -82,13 +97,36 @@ export class TicketsController {
     return this.updateStatus.execute(id, dto, actor);
   }
 
-  @ApiOperation({ summary: 'Responde o chamado (atendente da área ou gestão)' })
+  @ApiOperation({
+    summary: 'Responde o chamado com texto e anexos (atendente da área ou gestão)',
+  })
+  @ApiConsumes('multipart/form-data', 'application/json')
   @Post(':id/responses')
+  @UseInterceptors(
+    FilesInterceptor('files', 5, { limits: { fileSize: 15 * 1024 * 1024 } }),
+  )
   respond(
     @Param('id') id: string,
     @Body() dto: CreateResponseDto,
+    @UploadedFiles() files: UploadedFileLike[] | undefined,
     @CurrentUser() actor: AuthenticatedUser,
   ) {
-    return this.respondTicket.execute(id, dto, actor);
+    return this.respondTicket.execute(id, dto, actor, files ?? []);
+  }
+
+  @ApiOperation({ summary: 'Baixa um anexo de resposta (com verificação de acesso)' })
+  @Get(':ticketId/attachments/:attachmentId')
+  async downloadAttachment(
+    @Param('ticketId') ticketId: string,
+    @Param('attachmentId') attachmentId: string,
+    @CurrentUser() actor: AuthenticatedUser,
+    @Res() res: Response,
+  ) {
+    const anexo = await this.getAttachment.execute(
+      ticketId,
+      attachmentId,
+      actor,
+    );
+    res.download(anexo.caminhoAbsoluto, anexo.nomeOriginal);
   }
 }

@@ -1,6 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Prisma, Ticket, TicketResponse } from '@prisma/client';
+import { Attachment, Prisma, Ticket, TicketResponse } from '@prisma/client';
 import { TENANT_PRISMA, TenantPrisma } from '../../infra/prisma/prisma.module';
+
+export interface CreateAttachmentData {
+  responseId: string;
+  nomeOriginal: string;
+  caminho: string;
+  mime: string;
+  tamanho: number;
+}
 
 export type CreateTicketData = {
   titulo: string;
@@ -40,13 +48,24 @@ export class TicketsRepository {
     return this.prisma.ticket.findFirst({ where: { id } });
   }
 
-  findByIdWithResponses(
-    id: string,
-  ): Promise<(Ticket & { respostas: TicketResponse[] }) | null> {
+  findByIdWithResponses(id: string): Promise<
+    | (Ticket & {
+        respostas: (TicketResponse & { anexos: Attachment[] })[];
+      })
+    | null
+  > {
     return this.prisma.ticket.findFirst({
       where: { id },
-      include: { respostas: { orderBy: { criadoEm: 'asc' } } },
-    }) as Promise<(Ticket & { respostas: TicketResponse[] }) | null>;
+      include: {
+        respostas: {
+          orderBy: { criadoEm: 'asc' },
+          include: { anexos: true },
+        },
+      },
+    }) as Promise<
+      | (Ticket & { respostas: (TicketResponse & { anexos: Attachment[] })[] })
+      | null
+    >;
   }
 
   async update(
@@ -65,5 +84,20 @@ export class TicketsRepository {
     return this.prisma.ticketResponse.create({
       data: { ticketId, autorId, texto } as unknown as Prisma.TicketResponseCreateInput,
     });
+  }
+
+  createAttachment(data: CreateAttachmentData): Promise<Attachment> {
+    return this.prisma.attachment.create({
+      data: data as unknown as Prisma.AttachmentCreateInput,
+    });
+  }
+
+  findAttachmentById(
+    id: string,
+  ): Promise<(Attachment & { response: { ticketId: string } }) | null> {
+    return this.prisma.attachment.findFirst({
+      where: { id },
+      include: { response: { select: { ticketId: true } } },
+    }) as Promise<(Attachment & { response: { ticketId: string } }) | null>;
   }
 }

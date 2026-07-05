@@ -171,9 +171,28 @@ model TicketResponse {
   texto    String   @db.Text
   criadoEm DateTime @default(now())
 
+  anexos Attachment[]
+
   @@index([tenantId])
   @@index([ticketId])
   @@map("ticket_responses")
+}
+
+/// Anexo de uma resposta de chamado (armazenado no disco; caminho relativo).
+model Attachment {
+  id           String         @id @default(cuid())
+  tenantId     String
+  responseId   String
+  response     TicketResponse @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  nomeOriginal String
+  caminho      String
+  mime         String
+  tamanho      Int
+  criadoEm     DateTime       @default(now())
+
+  @@index([tenantId])
+  @@index([responseId])
+  @@map("attachments")
 }
 
 /// Job de importação de planilha (processado de forma assíncrona por um worker).
