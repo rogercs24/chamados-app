@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { REDIS_CLIENT } from '../../infra/redis/redis.module';
-import { buscarFaq, FaqItem } from './faq.data';
+import { buscarFaq, FAQ_DATA, FaqItem } from './faq.data';
 
 const TTL_SEGUNDOS = 30 * 60; // 30 minutos
 const prefixo = (token: string) => `faq:consulta:${token}`;
@@ -24,6 +24,11 @@ export class FaqService {
 
   buscar(termo?: string): FaqItem[] {
     return termo ? buscarFaq(termo) : [];
+  }
+
+  /** Todas as perguntas (para a base de conhecimento navegável). */
+  todos(): FaqItem[] {
+    return FAQ_DATA;
   }
 
   /** Registra a consulta e devolve um token de uso único (válido por 30 min). */

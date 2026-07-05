@@ -10,10 +10,12 @@ import { ConsultarFaqDto } from './dto/consultar-faq.dto';
 export class FaqController {
   constructor(private readonly faq: FaqService) {}
 
-  @ApiOperation({ summary: 'Busca no FAQ por termo' })
+  @ApiOperation({
+    summary: 'Lista o FAQ (todas as perguntas; filtra por termo se informado)',
+  })
   @Get()
-  buscar(@Query('termo') termo?: string) {
-    return this.faq.buscar(termo);
+  listar(@Query('termo') termo?: string) {
+    return termo ? this.faq.buscar(termo) : this.faq.todos();
   }
 
   @ApiOperation({

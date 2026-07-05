@@ -12,6 +12,7 @@ import type { Papel } from '../../lib/types';
 const NAV: { href: string; label: string; papeis: Papel[] | '*' }[] = [
   { href: '/dashboard', label: 'Dashboard', papeis: ['SUPER_ADMIN', 'ADMIN', 'TRIAGEM'] },
   { href: '/chamados', label: 'Chamados', papeis: '*' },
+  { href: '/faq', label: 'FAQ', papeis: '*' },
   { href: '/usuarios', label: 'Usuários', papeis: ['SUPER_ADMIN', 'ADMIN'] },
   { href: '/clientes', label: 'Clientes', papeis: ['SUPER_ADMIN', 'ADMIN', 'TRADE'] },
   { href: '/importacoes', label: 'Importações', papeis: ['SUPER_ADMIN', 'ADMIN', 'TRADE'] },
