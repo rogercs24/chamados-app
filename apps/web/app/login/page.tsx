@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/auth';
@@ -16,6 +16,12 @@ export default function LoginPage() {
   const [precisaMfa, setPrecisaMfa] = useState(false);
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Mensagem vinda de um redirect de OAuth que falhou (?erro=...).
+  useEffect(() => {
+    const msg = new URLSearchParams(window.location.search).get('erro');
+    if (msg) setErro(msg);
+  }, []);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();

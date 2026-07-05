@@ -84,6 +84,22 @@ export class AuthController {
     res.redirect(`${base}/auth/callback#${frag}`);
   }
 
+  /** Executa o login OAuth e redireciona ao frontend — sucesso ou falha. */
+  private async finishOAuth(req: Request, res: Response): Promise<void> {
+    const base = process.env.FRONTEND_URL ?? 'http://localhost:3000';
+    try {
+      const resultado = await this.oauthLoginUseCase.execute(
+        req.user as OAuthProfile,
+        this.meta(req),
+      );
+      this.setRefreshCookie(res, resultado.refreshToken);
+      this.oauthSuccessRedirect(res, resultado);
+    } catch (erro) {
+      const msg = erro instanceof Error ? erro.message : 'falha no login';
+      res.redirect(`${base}/login?erro=${encodeURIComponent(msg)}`);
+    }
+  }
+
   @Public()
   @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Cria empresa (tenant) + primeiro SUPER_ADMIN' })
@@ -193,12 +209,7 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   async googleCallback(@Req() req: Request, @Res() res: Response) {
-    const resultado = await this.oauthLoginUseCase.execute(
-      req.user as OAuthProfile,
-      this.meta(req),
-    );
-    this.setRefreshCookie(res, resultado.refreshToken);
-    this.oauthSuccessRedirect(res, resultado);
+    await this.finishOAuth(req, res);
   }
 
   @Public()
@@ -213,11 +224,6 @@ export class AuthController {
   @Get('github/callback')
   @UseGuards(AuthGuard('github'))
   async githubCallback(@Req() req: Request, @Res() res: Response) {
-    const resultado = await this.oauthLoginUseCase.execute(
-      req.user as OAuthProfile,
-      this.meta(req),
-    );
-    this.setRefreshCookie(res, resultado.refreshToken);
-    this.oauthSuccessRedirect(res, resultado);
+    await this.finishOAuth(req, res);
   }
 }
