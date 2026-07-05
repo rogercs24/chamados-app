@@ -33,7 +33,9 @@ ENV NODE_ENV=production
 COPY --from=installer /app /app
 WORKDIR /app/apps/api
 EXPOSE 3333
-# Healthcheck bate no endpoint /health (fora do prefixo /api)
-HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=5 \
-  CMD node -e "require('http').get('http://localhost:3333/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
-CMD ["node", "dist/main.js"]
+# Healthcheck em /health (respeita a PORT injetada por PaaS; 3333 no dev)
+HEALTHCHECK --interval=15s --timeout=5s --start-period=40s --retries=5 \
+  CMD node -e "const p=process.env.PORT||3333;require('http').get('http://localhost:'+p+'/health',r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+# Papel do processo por SERVICE_ROLE: 'worker' roda o worker; qualquer outro valor
+# (padrão) roda a API aplicando as migrations antes. Uma imagem, dois papéis.
+CMD ["sh", "-c", "if [ \"$SERVICE_ROLE\" = worker ]; then exec node dist/worker.js; else pnpm exec prisma migrate deploy && exec node dist/main.js; fi"]

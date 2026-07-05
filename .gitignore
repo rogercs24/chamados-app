@@ -37,6 +37,10 @@ legacy/backend/src/database/*.db
 .claude/settings.json
 .claude/settings.local.json
 
+# tooling local do Railway CLI (link/IaC experimental) e skills de agente
+.railway/
+.agents/
+
 # OS
 .DS_Store
 Thumbs.db
