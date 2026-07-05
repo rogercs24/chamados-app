@@ -276,7 +276,8 @@ pnpm dev                      # api + web + landing via turbo
 - [x] Fase 1 — Auth, tenancy, auditoria (build OK, 18 testes) — ADR-0004
 - [x] Fase 2 — Domínio: usuários (CRUD+RBAC), clientes (CNPJ/CEP), chamados
       (triagem/atendimento) — 29 testes, isolamento validado ao vivo
-- [ ] Fase 3 — Assíncrono + tempo real
+- [x] Fase 3 — Assíncrono (BullMQ import CSV/XLSX) + tempo real (Socket.IO) +
+      upload de anexos — os três validados ponta a ponta
 - [ ] Fase 4 — Dashboard + relatórios
 - [ ] Fase 5 — Frontend
 - [ ] Fase 6 — Testes, observabilidade, deploy, docs

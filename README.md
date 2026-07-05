@@ -82,7 +82,9 @@ pnpm dev
   RBAC, isolamento multi-tenant, rate-limit, auditoria)
 - **Fase 2 — Domínio** ✅ (usuários com CRUD+permissões, clientes com integração
   CNPJ/CEP, chamados com triagem/atendimento e visibilidade por área — 29 testes)
-- **Próxima: Fase 3 — Assíncrono (BullMQ) + tempo real (Socket.IO)**
+- **Fase 3 — Assíncrono + tempo real + upload** ✅ (importação de planilhas
+  CSV/XLSX via BullMQ, Socket.IO com adapter Redis, anexos em respostas)
+- **Próxima: Fase 4 — Dashboard de indicadores + relatórios**
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a
