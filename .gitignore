@@ -47,3 +47,6 @@ Thumbs.db
 
 # empty locked dir left by OneDrive during migration (harmless)
 /backend/
+
+.vercel
+.env*

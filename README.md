@@ -7,6 +7,17 @@ chamados, com isolamento de dados entre empresas (multi-tenant).
 > Prisma + MySQL. O app antigo está preservado em [`legacy/`](legacy/) como
 > referência de domínio.
 
+## 🚀 No ar
+
+| Serviço | URL |
+|---------|-----|
+| Plataforma (web) | https://web-iota-seven-layqozmpu8.vercel.app |
+| Landing | https://landing-sandy-delta-74.vercel.app |
+| API (Swagger em `/docs`) | https://api-production-74f4.up.railway.app |
+
+Backend (API + worker + MySQL + Redis) no **Railway**; frontends no **Vercel**.
+Detalhes de deploy em [docs/DEPLOY.md](docs/DEPLOY.md).
+
 ## Stack
 
 | Camada | Tecnologia |
@@ -130,9 +141,8 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build   # o mesmo, localmente
   Dockerfiles de produção (api/worker/web/landing) + `docker-compose.prod.yml`;
   CI (GitHub Actions: lint+typecheck+test+build **+ e2e**); ESLint da API; **teste
   e2e de isolamento multi-tenant** com Testcontainers (MySQL+Redis efêmeros);
-  observabilidade **Sentry** (erros 5xx, no-op sem DSN); **deploy declarado**
-  (Railway config-as-code + Vercel, ver [docs/DEPLOY.md](docs/DEPLOY.md)). **Pendente:**
-  só provisionar as contas/segredos e publicar
+  observabilidade **Sentry** (erros 5xx, no-op sem DSN); **deploy público no ar**
+  (Railway: API+worker+MySQL+Redis · Vercel: web+landing) — ver [🚀 No ar](#-no-ar)
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a

@@ -1,5 +1,14 @@
 # Deploy
 
+> **Já provisionado** (topologia B — Railway + Vercel):
+> - Plataforma: https://web-iota-seven-layqozmpu8.vercel.app
+> - Landing: https://landing-sandy-delta-74.vercel.app
+> - API: https://api-production-74f4.up.railway.app (`/docs` = Swagger)
+>
+> Backend (API + worker + MySQL + Redis) no Railway; frontends no Vercel.
+> Como os frontends não têm dependências do workspace, seus deploys usam
+> `npm install --legacy-peer-deps` a partir da pasta do app (ver `apps/*/vercel.json`).
+
 Tudo o que o deploy precisa está **declarado no repositório**. Publicar = conectar o
 repo ao provedor e preencher os segredos. Não há passo manual de build.
 
