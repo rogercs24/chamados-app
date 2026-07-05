@@ -86,7 +86,9 @@ pnpm dev
   CSV/XLSX via BullMQ, Socket.IO com adapter Redis, anexos em respostas)
 - **Fase 4 — Dashboard + relatórios** ✅ (indicadores por status/área/período e
   tempo de resposta; geração assíncrona de relatório XLSX)
-- **Próxima: Fase 5 — Frontends (plataforma Next.js + landing)**
+- **Fase 5 — Frontends** ✅ (plataforma Next.js cobrindo todas as telas com
+  tempo real; landing page animada com storytelling)
+- **Próxima: Fase 6 — Deploy público + documentação final**
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a

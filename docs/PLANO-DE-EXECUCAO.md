@@ -280,5 +280,6 @@ pnpm dev                      # api + web + landing via turbo
       upload de anexos — os três validados ponta a ponta
 - [x] Fase 4 — Dashboard (status/área/série/tempo de resposta) + geração
       assíncrona de relatório XLSX — validados ao vivo
-- [ ] Fase 5 — Frontend
+- [x] Fase 5 — Frontend: plataforma Next.js (todas as telas, tempo real) +
+      landing animada — builds OK (web 12 rotas, landing)
 - [ ] Fase 6 — Testes, observabilidade, deploy, docs
