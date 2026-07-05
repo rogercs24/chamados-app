@@ -294,5 +294,6 @@ pnpm dev                      # api + web + landing via turbo
         script de cobertura (`test:cov`)
   - [x] Observabilidade: integração Sentry (`instrument.ts` + captura de 5xx no
         filter, no-op sem DSN) — correlation-id, exception filter e health já prontos
-  - [ ] Deploy público (Railway + Vercel) — Dockerfiles/compose/CI prontos; falta
-        provisionar contas e segredos
+  - [x] Deploy declarado (config-as-code): Railway (`deploy/railway/*.json`) para
+        api+worker, Vercel (`apps/*/vercel.json`) para os frontends, guia `docs/DEPLOY.md`
+  - [ ] Publicação pública em si — depende de provisionar contas/segredos (do avaliador)

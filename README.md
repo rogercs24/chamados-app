@@ -87,9 +87,10 @@ docker compose -f docker-compose.prod.yml up -d --build
 - Imagens: [`apps/api/Dockerfile`](apps/api/Dockerfile) (serve API **e** worker),
   [`apps/web/Dockerfile`](apps/web/Dockerfile), [`apps/landing/Dockerfile`](apps/landing/Dockerfile).
 
-**Deploy:** qualquer host Docker roda o stack acima (Railway, Render, Fly, VPS). A API e o
-worker apontam para MySQL e Redis gerenciados via `DATABASE_URL`/`REDIS_URL`. Os frontends
-Next também rodam bem na Vercel (build padrão, sem `standalone`).
+**Deploy:** declarado no repo — Railway (config-as-code em [`deploy/railway/`](deploy/railway/))
+para api+worker+MySQL+Redis e Vercel ([`apps/*/vercel.json`](apps/web/vercel.json)) para os
+frontends. Passo a passo em **[docs/DEPLOY.md](docs/DEPLOY.md)**. Publicar = conectar o repo e
+preencher os segredos; não há passo manual de build.
 
 ## Qualidade (CI)
 
@@ -104,6 +105,7 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build   # o mesmo, localmente
 
 - [Arquitetura](docs/ARQUITETURA.md) — componentes, camadas e o mecanismo de isolamento
 - [Fluxos](docs/FLUXOS.md) — sequências dos fluxos-chave (auth, chamado, assíncrono, tempo real)
+- [Deploy](docs/DEPLOY.md) — Railway + Vercel, config-as-code e matriz de variáveis
 - [Plano de execução](docs/PLANO-DE-EXECUCAO.md) — fases, escopo e rastreabilidade
 - [ADR-0001](docs/adr/ADR-0001-estrategia-multi-tenant.md) — estratégia multi-tenant
 - [ADR-0002](docs/adr/ADR-0002-comunicacao-tempo-real.md) — tempo real (Socket.IO)
@@ -128,8 +130,9 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build   # o mesmo, localmente
   Dockerfiles de produção (api/worker/web/landing) + `docker-compose.prod.yml`;
   CI (GitHub Actions: lint+typecheck+test+build **+ e2e**); ESLint da API; **teste
   e2e de isolamento multi-tenant** com Testcontainers (MySQL+Redis efêmeros);
-  observabilidade **Sentry** (erros 5xx, no-op sem DSN). **Pendente:** deploy público
-  (Railway/Vercel) — infra pronta, falta apertar o botão
+  observabilidade **Sentry** (erros 5xx, no-op sem DSN); **deploy declarado**
+  (Railway config-as-code + Vercel, ver [docs/DEPLOY.md](docs/DEPLOY.md)). **Pendente:**
+  só provisionar as contas/segredos e publicar
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a

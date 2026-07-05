@@ -50,8 +50,9 @@ async function bootstrap(): Promise<void> {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
 
-  const port = process.env.API_PORT ? Number(process.env.API_PORT) : 3333;
-  await app.listen(port);
+  // API_PORT tem prioridade; PORT é o padrão de PaaS (Railway etc.); 3333 no dev.
+  const port = Number(process.env.API_PORT ?? process.env.PORT ?? 3333);
+  await app.listen(port, '0.0.0.0');
 
   const logger = app.get(Logger);
   logger.log(`API rodando em http://localhost:${port}`);
