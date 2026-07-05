@@ -3,8 +3,13 @@
  * Isolada da extension para ser testável sem banco (ver tenant-scope.spec.ts).
  */
 
-/** Modelos isolados por tenant. Cresce a cada fase (Ticket, ...). */
-export const TENANT_MODELS = new Set<string>(['User', 'Client']);
+/** Modelos isolados por tenant. */
+export const TENANT_MODELS = new Set<string>([
+  'User',
+  'Client',
+  'Ticket',
+  'TicketResponse',
+]);
 
 /** Operações onde injetamos `where.tenantId`. */
 const SCOPED_WHERE_OPS = new Set<string>([

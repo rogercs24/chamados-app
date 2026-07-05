@@ -22,6 +22,28 @@ enum Papel {
   SOLICITANTE
 }
 
+enum Area {
+  TI
+  TRADE
+  OPERACOES
+  OUTROS
+}
+
+enum Prioridade {
+  BAIXA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum StatusChamado {
+  TRIAGEM
+  ABERTO
+  EM_ANDAMENTO
+  RESOLVIDO
+  FECHADO
+}
+
 /// Empresa (tenant). Raiz do isolamento de dados.
 model Tenant {
   id           String   @id @default(cuid())
@@ -106,6 +128,45 @@ model Client {
   @@unique([tenantId, cnpj])
   @@index([tenantId])
   @@map("clients")
+}
+
+/// Chamado. Fluxo: TRIAGEM -> (triagem define prioridade+área) -> ABERTO ->
+/// EM_ANDAMENTO -> RESOLVIDO -> FECHADO. Isolado por tenantId.
+model Ticket {
+  id                 String        @id @default(cuid())
+  tenantId           String
+  titulo             String
+  descricao          String        @db.Text
+  solicitanteId      String
+  clientId           String?
+  prioridade         Prioridade?
+  area               Area?
+  status             StatusChamado @default(TRIAGEM)
+  primeiraRespostaEm DateTime? // métrica de tempo de resposta (dashboard)
+  fechadoEm          DateTime?
+  criadoEm           DateTime      @default(now())
+  atualizadoEm       DateTime      @updatedAt
+
+  respostas TicketResponse[]
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, area])
+  @@map("tickets")
+}
+
+model TicketResponse {
+  id       String   @id @default(cuid())
+  tenantId String
+  ticketId String
+  ticket   Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  autorId  String
+  texto    String   @db.Text
+  criadoEm DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([ticketId])
+  @@map("ticket_responses")
 }
 
 /// Trilha de auditoria append-only. Escopo de tenant explícito (não passa pela

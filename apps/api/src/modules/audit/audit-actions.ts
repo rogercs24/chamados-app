@@ -16,6 +16,10 @@ export const AuditAction = {
   CLIENT_CREATED: 'client.created',
   CLIENT_UPDATED: 'client.updated',
   CLIENT_DELETED: 'client.deleted',
+  TICKET_CREATED: 'ticket.created',
+  TICKET_TRIAGED: 'ticket.triaged',
+  TICKET_STATUS_CHANGED: 'ticket.status_changed',
+  TICKET_ANSWERED: 'ticket.answered',
 } as const;
 
 export type AuditActionType = (typeof AuditAction)[keyof typeof AuditAction];
