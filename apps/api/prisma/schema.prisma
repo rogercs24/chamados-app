@@ -44,6 +44,13 @@ enum StatusChamado {
   FECHADO
 }
 
+enum ImportStatus {
+  PENDENTE
+  PROCESSANDO
+  CONCLUIDO
+  FALHOU
+}
+
 /// Empresa (tenant). Raiz do isolamento de dados.
 model Tenant {
   id           String   @id @default(cuid())
@@ -167,6 +174,27 @@ model TicketResponse {
   @@index([tenantId])
   @@index([ticketId])
   @@map("ticket_responses")
+}
+
+/// Job de importação de planilha (processado de forma assíncrona por um worker).
+/// Escopo de tenant explícito (o worker roda fora do contexto de requisição).
+model ImportJob {
+  id           String       @id @default(cuid())
+  tenantId     String
+  tipo         String
+  arquivoNome  String
+  status       ImportStatus @default(PENDENTE)
+  total        Int          @default(0)
+  processados  Int          @default(0)
+  sucesso      Int          @default(0)
+  falhas       Int          @default(0)
+  erros        Json?
+  criadoPor    String
+  criadoEm     DateTime     @default(now())
+  atualizadoEm DateTime     @updatedAt
+
+  @@index([tenantId])
+  @@map("import_jobs")
 }
 
 /// Trilha de auditoria append-only. Escopo de tenant explícito (não passa pela

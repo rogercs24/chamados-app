@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
+import { BullModule } from '@nestjs/bullmq';
 import { LoggerModule } from 'nestjs-pino';
 
 import { validateEnv } from './config/env.validation';
@@ -16,6 +17,7 @@ import { AuditModule } from './modules/audit/audit.module';
 import { UsersModule } from './modules/users/users.module';
 import { ClientsModule } from './modules/clients/clients.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
+import { ImportsModule } from './modules/imports/imports.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -49,6 +51,21 @@ import { TenantContextMiddleware } from './common/context/tenant-context.middlew
         ),
       }),
     }),
+    BullModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => {
+        const url = new URL(
+          config.get<string>('REDIS_URL') ?? 'redis://localhost:6379',
+        );
+        return {
+          connection: {
+            host: url.hostname,
+            port: Number(url.port || 6379),
+            password: url.password || undefined,
+          },
+        };
+      },
+    }),
     PrismaModule,
     RedisModule,
     RealtimeModule,
@@ -58,6 +75,7 @@ import { TenantContextMiddleware } from './common/context/tenant-context.middlew
     UsersModule,
     ClientsModule,
     TicketsModule,
+    ImportsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
