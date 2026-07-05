@@ -124,10 +124,11 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build   # o mesmo, localmente
   tempo de resposta; geração assíncrona de relatório XLSX)
 - **Fase 5 — Frontends** ✅ (plataforma Next.js cobrindo todas as telas com
   tempo real; landing page animada com storytelling)
-- **Fase 6 — Deploy + docs** 🚧 (em andamento) — docs de arquitetura/fluxos,
-  Dockerfiles de produção (api/worker/web/landing) + `docker-compose.prod.yml`,
-  CI (GitHub Actions: lint+typecheck+test+build), ESLint da API. **Pendente:**
-  testes e2e (Testcontainers) e integração Sentry
+- **Fase 6 — Testes, deploy + docs** 🚧 (em andamento) — docs de arquitetura/fluxos;
+  Dockerfiles de produção (api/worker/web/landing) + `docker-compose.prod.yml`;
+  CI (GitHub Actions: lint+typecheck+test+build **+ e2e**); ESLint da API; **teste
+  e2e de isolamento multi-tenant** com Testcontainers (MySQL+Redis efêmeros).
+  **Pendente:** integração Sentry
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a

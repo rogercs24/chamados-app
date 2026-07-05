@@ -289,5 +289,7 @@ pnpm dev                      # api + web + landing via turbo
         da API validada ao vivo (`/health` 200 + migrations) e a da landing (serve 200)
   - [x] CI: GitHub Actions (lint + typecheck + test + build) — pipeline verde local;
         ESLint da API configurado (antes inexistente)
-  - [ ] Testes e2e (Supertest + Testcontainers MySQL) + cobertura
+  - [x] Testes e2e (Supertest + Testcontainers MySQL+Redis): isolamento
+        multi-tenant ponta a ponta (6 casos, 404-não-403 validado) + job no CI +
+        script de cobertura (`test:cov`)
   - [ ] Observabilidade: integração Sentry (correlation-id, filter e health já prontos)

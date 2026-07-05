@@ -46,3 +46,30 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  e2e:
+    name: E2E (Testcontainers)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: pnpm --filter @chamados/api prisma:generate
+
+      # Runners ubuntu já têm Docker; o Testcontainers sobe MySQL + Redis efêmeros.
+      - name: E2E (isolamento multi-tenant)
+        run: pnpm --filter @chamados/api test:e2e
