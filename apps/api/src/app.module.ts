@@ -9,6 +9,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './infra/prisma/prisma.module';
 import { RedisModule } from './infra/redis/redis.module';
+import { RealtimeModule } from './infra/realtime/realtime.module';
 import { HealthModule } from './modules/health/health.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { AuditModule } from './modules/audit/audit.module';
@@ -50,6 +51,7 @@ import { TenantContextMiddleware } from './common/context/tenant-context.middlew
     }),
     PrismaModule,
     RedisModule,
+    RealtimeModule,
     AuditModule,
     HealthModule,
     AuthModule,

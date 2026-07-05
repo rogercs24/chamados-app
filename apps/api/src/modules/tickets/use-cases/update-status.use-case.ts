@@ -9,6 +9,7 @@ import { UpdateStatusDto } from '../dto/update-status.dto';
 import { AuditService } from '../../audit/audit.service';
 import { AuditAction } from '../../audit/audit-actions';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user';
+import { RealtimeGateway } from '../../../infra/realtime/realtime.gateway';
 import { podeAtuar } from '../ticket-access';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class UpdateStatusUseCase {
   constructor(
     private readonly repo: TicketsRepository,
     private readonly audit: AuditService,
+    private readonly realtime: RealtimeGateway,
   ) {}
 
   async execute(id: string, dto: UpdateStatusDto, actor: AuthenticatedUser) {
@@ -41,6 +43,11 @@ export class UpdateStatusUseCase {
       entidade: 'Ticket',
       entidadeId: id,
       metadata: { de: ticket.status, para: dto.status },
+    });
+
+    this.realtime.emitToTenant(actor.tenantId, 'ticket:status', {
+      id,
+      status: dto.status,
     });
 
     return atualizado;

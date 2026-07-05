@@ -9,6 +9,7 @@ import { TriageTicketDto } from '../dto/triage-ticket.dto';
 import { AuditService } from '../../audit/audit.service';
 import { AuditAction } from '../../audit/audit-actions';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user';
+import { RealtimeGateway } from '../../../infra/realtime/realtime.gateway';
 
 /** Triagem (gestão): define prioridade + área e abre o chamado. */
 @Injectable()
@@ -16,6 +17,7 @@ export class TriageTicketUseCase {
   constructor(
     private readonly repo: TicketsRepository,
     private readonly audit: AuditService,
+    private readonly realtime: RealtimeGateway,
   ) {}
 
   async execute(id: string, dto: TriageTicketDto, actor: AuthenticatedUser) {
@@ -38,6 +40,13 @@ export class TriageTicketUseCase {
       entidade: 'Ticket',
       entidadeId: id,
       metadata: { prioridade: dto.prioridade, area: dto.area },
+    });
+
+    this.realtime.emitToTenant(actor.tenantId, 'ticket:triaged', {
+      id,
+      area: dto.area,
+      prioridade: dto.prioridade,
+      status: atualizado?.status,
     });
 
     return atualizado;

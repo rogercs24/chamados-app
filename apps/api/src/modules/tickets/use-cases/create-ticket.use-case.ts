@@ -4,6 +4,7 @@ import { AuditService } from '../../audit/audit.service';
 import { AuditAction } from '../../audit/audit-actions';
 import { CreateTicketDto } from '../dto/create-ticket.dto';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user';
+import { RealtimeGateway } from '../../../infra/realtime/realtime.gateway';
 
 /** Abertura de chamado: qualquer usuário autenticado. Entra em TRIAGEM. */
 @Injectable()
@@ -11,6 +12,7 @@ export class CreateTicketUseCase {
   constructor(
     private readonly repo: TicketsRepository,
     private readonly audit: AuditService,
+    private readonly realtime: RealtimeGateway,
   ) {}
 
   async execute(dto: CreateTicketDto, actor: AuthenticatedUser) {
@@ -28,6 +30,12 @@ export class CreateTicketUseCase {
       entidade: 'Ticket',
       entidadeId: ticket.id,
       metadata: { titulo: ticket.titulo },
+    });
+
+    this.realtime.emitToTenant(actor.tenantId, 'ticket:created', {
+      id: ticket.id,
+      titulo: ticket.titulo,
+      status: ticket.status,
     });
 
     return ticket;

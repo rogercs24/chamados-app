@@ -6,6 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
+import { RedisIoAdapter } from './infra/realtime/redis-io.adapter';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -29,6 +30,14 @@ async function bootstrap(): Promise<void> {
       transform: true,
     }),
   );
+
+  // Socket.IO com adapter Redis (tempo real escalável)
+  const redisAdapter = new RedisIoAdapter(
+    app,
+    process.env.REDIS_URL ?? 'redis://localhost:6379',
+  );
+  await redisAdapter.connectToRedis();
+  app.useWebSocketAdapter(redisAdapter);
 
   // Documentação OpenAPI/Swagger
   const swaggerConfig = new DocumentBuilder()

@@ -9,6 +9,7 @@ import { CreateResponseDto } from '../dto/create-response.dto';
 import { AuditService } from '../../audit/audit.service';
 import { AuditAction } from '../../audit/audit-actions';
 import { AuthenticatedUser } from '../../../common/types/authenticated-user';
+import { RealtimeGateway } from '../../../infra/realtime/realtime.gateway';
 import { podeAtuar } from '../ticket-access';
 
 /** Resposta de atendente/gestão. A primeira resposta inicia o atendimento. */
@@ -17,6 +18,7 @@ export class RespondTicketUseCase {
   constructor(
     private readonly repo: TicketsRepository,
     private readonly audit: AuditService,
+    private readonly realtime: RealtimeGateway,
   ) {}
 
   async execute(id: string, dto: CreateResponseDto, actor: AuthenticatedUser) {
@@ -45,6 +47,12 @@ export class RespondTicketUseCase {
       actorId: actor.id,
       entidade: 'Ticket',
       entidadeId: id,
+    });
+
+    this.realtime.emitToTenant(actor.tenantId, 'ticket:answered', {
+      id,
+      respostaId: resposta.id,
+      autorId: actor.id,
     });
 
     return resposta;
