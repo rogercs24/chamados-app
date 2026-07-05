@@ -69,10 +69,13 @@ pnpm dev
 
 ## Documentação
 
+- [Arquitetura](docs/ARQUITETURA.md) — componentes, camadas e o mecanismo de isolamento
+- [Fluxos](docs/FLUXOS.md) — sequências dos fluxos-chave (auth, chamado, assíncrono, tempo real)
 - [Plano de execução](docs/PLANO-DE-EXECUCAO.md) — fases, escopo e rastreabilidade
 - [ADR-0001](docs/adr/ADR-0001-estrategia-multi-tenant.md) — estratégia multi-tenant
 - [ADR-0002](docs/adr/ADR-0002-comunicacao-tempo-real.md) — tempo real (Socket.IO)
 - [ADR-0003](docs/adr/ADR-0003-processamento-assincrono.md) — assíncrono (BullMQ)
+- [ADR-0004](docs/adr/ADR-0004-modelo-de-identidade-e-auth.md) — identidade e autenticação
 - [CLAUDE.md](CLAUDE.md) — guia de contexto e convenções
 
 ## Status
