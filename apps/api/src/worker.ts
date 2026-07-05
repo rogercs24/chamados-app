@@ -1,3 +1,4 @@
+import './instrument'; // Sentry — deve vir antes de tudo
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { Logger as NestLogger } from '@nestjs/common';

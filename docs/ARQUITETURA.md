@@ -211,6 +211,9 @@ progresso sobrevive a reconexão do cliente — o socket é notificação, não 
 - **Exception filter global** — `AllExceptionsFilter` padroniza o corpo de erro e esconde stack.
 - **Health / readiness** — `modules/health/` com `@nestjs/terminus`; `prisma.health.ts` checa o
   banco (`SELECT 1`). `GET /health` fica fora do prefixo `/api`.
+- **Sentry** — `@sentry/nestjs` inicializado em `src/instrument.ts` (importado antes de tudo em
+  `main.ts`/`worker.ts`). O `AllExceptionsFilter` reporta erros 5xx com `Sentry.captureException`,
+  correlacionando pelo `x-request-id`. Sem `SENTRY_DSN` configurado é **no-op** — zero impacto.
 
 ---
 

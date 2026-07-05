@@ -292,4 +292,7 @@ pnpm dev                      # api + web + landing via turbo
   - [x] Testes e2e (Supertest + Testcontainers MySQL+Redis): isolamento
         multi-tenant ponta a ponta (6 casos, 404-não-403 validado) + job no CI +
         script de cobertura (`test:cov`)
-  - [ ] Observabilidade: integração Sentry (correlation-id, filter e health já prontos)
+  - [x] Observabilidade: integração Sentry (`instrument.ts` + captura de 5xx no
+        filter, no-op sem DSN) — correlation-id, exception filter e health já prontos
+  - [ ] Deploy público (Railway + Vercel) — Dockerfiles/compose/CI prontos; falta
+        provisionar contas e segredos

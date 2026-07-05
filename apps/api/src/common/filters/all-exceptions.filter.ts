@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import * as Sentry from '@sentry/nestjs';
 
 /** Tratamento global de exceções: resposta padronizada e log de erros 5xx. */
 @Catch()
@@ -34,6 +35,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
       this.logger.error(
         exception instanceof Error ? exception.stack : String(exception),
       );
+      // Reporta ao Sentry (no-op sem DSN). Correlaciona pelo request-id.
+      Sentry.captureException(exception, {
+        tags: { path: request.url },
+        extra: { requestId: request.headers['x-request-id'] },
+      });
     }
 
     response.status(status).json({

@@ -127,8 +127,9 @@ pnpm lint && pnpm typecheck && pnpm test && pnpm build   # o mesmo, localmente
 - **Fase 6 — Testes, deploy + docs** 🚧 (em andamento) — docs de arquitetura/fluxos;
   Dockerfiles de produção (api/worker/web/landing) + `docker-compose.prod.yml`;
   CI (GitHub Actions: lint+typecheck+test+build **+ e2e**); ESLint da API; **teste
-  e2e de isolamento multi-tenant** com Testcontainers (MySQL+Redis efêmeros).
-  **Pendente:** integração Sentry
+  e2e de isolamento multi-tenant** com Testcontainers (MySQL+Redis efêmeros);
+  observabilidade **Sentry** (erros 5xx, no-op sem DSN). **Pendente:** deploy público
+  (Railway/Vercel) — infra pronta, falta apertar o botão
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a

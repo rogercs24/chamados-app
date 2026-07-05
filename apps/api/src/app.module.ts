@@ -6,6 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from '@nest-lab/throttler-storage-redis';
 import { BullModule } from '@nestjs/bullmq';
 import { LoggerModule } from 'nestjs-pino';
+import { SentryModule } from '@sentry/nestjs/setup';
 
 import { validateEnv } from './config/env.validation';
 import { PrismaModule } from './infra/prisma/prisma.module';
@@ -28,6 +29,7 @@ import { TenantContextMiddleware } from './common/context/tenant-context.middlew
 
 @Module({
   imports: [
+    SentryModule.forRoot(), // observabilidade de erros — primeiro import (no-op sem DSN)
     ConfigModule.forRoot({ isGlobal: true, validate: validateEnv }),
     LoggerModule.forRoot({
       pinoHttp: {

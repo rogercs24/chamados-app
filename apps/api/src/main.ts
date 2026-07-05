@@ -1,3 +1,4 @@
+import './instrument'; // Sentry — deve vir antes de tudo
 import 'reflect-metadata';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';

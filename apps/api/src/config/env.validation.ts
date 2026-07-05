@@ -28,6 +28,11 @@ export const envSchema = z.object({
 
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().optional(),
+
+  // Observabilidade (Sentry) — opcional; sem DSN a integração é no-op.
+  SENTRY_DSN: z.string().optional(),
+  SENTRY_ENVIRONMENT: z.string().optional(),
+  SENTRY_TRACES_SAMPLE_RATE: z.coerce.number().min(0).max(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
