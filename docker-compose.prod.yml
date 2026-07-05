@@ -1,0 +1,94 @@
+# Stack completo de produção: api + worker + web + landing + mysql + redis.
+# Constrói as imagens a partir do código deste repositório.
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Segredos vêm de um arquivo .env na raiz (copie de .env.example e ajuste).
+# Hosts internos (mysql/redis) sobrescrevem os valores de localhost do .env.
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-chamados}
+      MYSQL_USER: ${MYSQL_USER:-chamados}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-chamados}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "mysql://${MYSQL_USER:-chamados}:${MYSQL_PASSWORD:-chamados}@mysql:3306/${MYSQL_DATABASE:-chamados}"
+      REDIS_URL: "redis://redis:6379"
+    # Aplica as migrations pendentes antes de subir o servidor
+    command: sh -c "pnpm exec prisma migrate deploy && node dist/main.js"
+    ports:
+      - "3333:3333"
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "mysql://${MYSQL_USER:-chamados}:${MYSQL_PASSWORD:-chamados}@mysql:3306/${MYSQL_DATABASE:-chamados}"
+      REDIS_URL: "redis://redis:6379"
+    command: node dist/worker.js
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3333}
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+  landing:
+    build:
+      context: .
+      dockerfile: apps/landing/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+
+volumes:
+  mysql_data:
+  redis_data:

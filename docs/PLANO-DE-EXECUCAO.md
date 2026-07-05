@@ -282,4 +282,12 @@ pnpm dev                      # api + web + landing via turbo
       assíncrona de relatório XLSX — validados ao vivo
 - [x] Fase 5 — Frontend: plataforma Next.js (todas as telas, tempo real) +
       landing animada — builds OK (web 12 rotas, landing)
-- [ ] Fase 6 — Testes, observabilidade, deploy, docs
+- [~] Fase 6 — Testes, observabilidade, deploy, docs (em andamento)
+  - [x] Docs: `ARQUITETURA.md` + `FLUXOS.md`; ADRs revisados; README ampliado
+  - [x] Deploy: Dockerfiles de produção (api/worker/web/landing), `worker.ts`
+        (processo separado), `docker-compose.prod.yml`, `.dockerignore` — imagem
+        da API validada ao vivo (`/health` 200 + migrations) e a da landing (serve 200)
+  - [x] CI: GitHub Actions (lint + typecheck + test + build) — pipeline verde local;
+        ESLint da API configurado (antes inexistente)
+  - [ ] Testes e2e (Supertest + Testcontainers MySQL) + cobertura
+  - [ ] Observabilidade: integração Sentry (correlation-id, filter e health já prontos)

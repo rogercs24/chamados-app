@@ -67,6 +67,39 @@ pnpm dev
 
 **Login de demonstração (após seed):** `admin@demo.com` / `Admin@123`
 
+## Produção (Docker)
+
+Todo o stack é containerizado. As imagens são construídas a partir deste repositório
+(multi-stage + `turbo prune`; Next em `output: standalone`):
+
+```bash
+# copie e ajuste os segredos
+cp .env.example .env
+
+# constrói e sobe api + worker + web + landing + mysql + redis
+docker compose -f docker-compose.prod.yml up -d --build
+```
+
+- A API aplica as migrations pendentes (`prisma migrate deploy`) antes de subir.
+- O **worker** roda em processo separado (`node dist/worker.js`), consumindo as filas
+  BullMQ e emitindo eventos de tempo real via o mesmo adapter Redis (ver
+  [ADR-0003](docs/adr/ADR-0003-processamento-assincrono.md)).
+- Imagens: [`apps/api/Dockerfile`](apps/api/Dockerfile) (serve API **e** worker),
+  [`apps/web/Dockerfile`](apps/web/Dockerfile), [`apps/landing/Dockerfile`](apps/landing/Dockerfile).
+
+**Deploy:** qualquer host Docker roda o stack acima (Railway, Render, Fly, VPS). A API e o
+worker apontam para MySQL e Redis gerenciados via `DATABASE_URL`/`REDIS_URL`. Os frontends
+Next também rodam bem na Vercel (build padrão, sem `standalone`).
+
+## Qualidade (CI)
+
+[GitHub Actions](.github/workflows/ci.yml) roda em cada push/PR: `install` →
+`prisma generate` → **lint** → **typecheck** → **test** → **build** no monorepo (via Turborepo).
+
+```bash
+pnpm lint && pnpm typecheck && pnpm test && pnpm build   # o mesmo, localmente
+```
+
 ## Documentação
 
 - [Arquitetura](docs/ARQUITETURA.md) — componentes, camadas e o mecanismo de isolamento
@@ -91,7 +124,10 @@ pnpm dev
   tempo de resposta; geração assíncrona de relatório XLSX)
 - **Fase 5 — Frontends** ✅ (plataforma Next.js cobrindo todas as telas com
   tempo real; landing page animada com storytelling)
-- **Próxima: Fase 6 — Deploy público + documentação final**
+- **Fase 6 — Deploy + docs** 🚧 (em andamento) — docs de arquitetura/fluxos,
+  Dockerfiles de produção (api/worker/web/landing) + `docker-compose.prod.yml`,
+  CI (GitHub Actions: lint+typecheck+test+build), ESLint da API. **Pendente:**
+  testes e2e (Testcontainers) e integração Sentry
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a
