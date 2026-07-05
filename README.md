@@ -79,8 +79,10 @@ pnpm dev
 
 - **Fase 0 — Fundação** ✅ (monorepo, infra, API bootável)
 - **Fase 1 — Autenticação, tenancy e auditoria** ✅ (login/OAuth/MFA/JWT+refresh,
-  RBAC, isolamento multi-tenant, rate-limit, auditoria — 18 testes)
-- **Próxima: Fase 2 — Domínio** (usuários, clientes, chamados)
+  RBAC, isolamento multi-tenant, rate-limit, auditoria)
+- **Fase 2 — Domínio** ✅ (usuários com CRUD+permissões, clientes com integração
+  CNPJ/CEP, chamados com triagem/atendimento e visibilidade por área — 29 testes)
+- **Próxima: Fase 3 — Assíncrono (BullMQ) + tempo real (Socket.IO)**
 
 > **Primeira execução do banco:** com o Docker no ar (`pnpm infra:up`), rode
 > `pnpm --filter @chamados/api prisma:migrate` — a migration inicial é criada a

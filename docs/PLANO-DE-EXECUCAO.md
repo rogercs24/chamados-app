@@ -273,8 +273,9 @@ pnpm dev                      # api + web + landing via turbo
 
 - [x] Diagnóstico do app legado e decisões de stack
 - [x] Fase 0 — Fundação (monorepo, infra, API bootável, ADRs) — build 4/4 OK
-- [x] Fase 1 — Auth, tenancy, auditoria (build OK, 18 testes) — ADR-0004; migration pendente de Docker
-- [ ] Fase 2 — Domínio
+- [x] Fase 1 — Auth, tenancy, auditoria (build OK, 18 testes) — ADR-0004
+- [x] Fase 2 — Domínio: usuários (CRUD+RBAC), clientes (CNPJ/CEP), chamados
+      (triagem/atendimento) — 29 testes, isolamento validado ao vivo
 - [ ] Fase 3 — Assíncrono + tempo real
 - [ ] Fase 4 — Dashboard + relatórios
 - [ ] Fase 5 — Frontend
