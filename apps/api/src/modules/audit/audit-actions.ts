@@ -20,6 +20,7 @@ export const AuditAction = {
   TICKET_TRIAGED: 'ticket.triaged',
   TICKET_STATUS_CHANGED: 'ticket.status_changed',
   TICKET_ANSWERED: 'ticket.answered',
+  TICKET_DELETED: 'ticket.deleted',
 } as const;
 
 export type AuditActionType = (typeof AuditAction)[keyof typeof AuditAction];

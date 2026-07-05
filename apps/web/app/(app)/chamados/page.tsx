@@ -37,7 +37,13 @@ export default function ChamadosPage() {
   );
   const toast = useToast();
   useRealtime(
-    ['ticket:created', 'ticket:triaged', 'ticket:status', 'ticket:answered'],
+    [
+      'ticket:created',
+      'ticket:triaged',
+      'ticket:status',
+      'ticket:answered',
+      'ticket:deleted',
+    ],
     recarregar,
   );
 

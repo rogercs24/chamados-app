@@ -48,6 +48,11 @@ export class TicketsRepository {
     return this.prisma.ticket.findFirst({ where: { id } });
   }
 
+  /** Exclui o chamado (respostas e anexos caem por cascade no banco). */
+  async delete(id: string): Promise<void> {
+    await this.prisma.ticket.deleteMany({ where: { id } });
+  }
+
   findByIdWithResponses(id: string): Promise<
     | (Ticket & {
         respostas: (TicketResponse & { anexos: Attachment[] })[];

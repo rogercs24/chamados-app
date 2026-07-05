@@ -67,6 +67,13 @@ export class UsersRepository {
     return this.prisma.user.findFirst({ where: this.ativos({ id }) });
   }
 
+  /** Quantos administradores ativos (SUPER_ADMIN/ADMIN) o tenant tem. */
+  contarAdmins(): Promise<number> {
+    return this.prisma.user.count({
+      where: this.ativos({ papel: { in: [Papel.SUPER_ADMIN, Papel.ADMIN] } }),
+    });
+  }
+
   async update(
     id: string,
     data: Prisma.UserUncheckedUpdateManyInput,

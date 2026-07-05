@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '../../../../lib/api';
 import { useApi } from '../../../../lib/use-api';
@@ -32,6 +32,7 @@ const ACOES_STATUS = ['EM_ANDAMENTO', 'RESOLVIDO', 'FECHADO'] as const;
 
 export default function ChamadoDetalhe() {
   const { id } = useParams<{ id: string }>();
+  const router = useRouter();
   const { user } = useAuth();
   const toast = useToast();
   const { data: ticket, loading, recarregar } = useApi<Ticket>(`/tickets/${id}`);
@@ -97,6 +98,20 @@ export default function ChamadoDetalhe() {
     }
   }
 
+  async function excluir() {
+    if (!window.confirm('Excluir este chamado? Esta ação não pode ser desfeita.'))
+      return;
+    try {
+      await api(`/tickets/${id}`, { method: 'DELETE' });
+      toast('Chamado excluído', 'sucesso');
+      router.push('/chamados');
+    } catch (err) {
+      toast((err as Error).message, 'erro');
+    }
+  }
+
+  const podeExcluir = user.papel === 'SUPER_ADMIN' || user.papel === 'ADMIN';
+
   return (
     <div className="mx-auto max-w-3xl">
       <Link href="/chamados" className="text-sm text-slate-500 hover:text-slate-800">
@@ -105,9 +120,16 @@ export default function ChamadoDetalhe() {
 
       <div className="mt-2 mb-4 flex items-start justify-between gap-4">
         <h1 className="text-2xl font-bold text-slate-900">{ticket.titulo}</h1>
-        <Badge className={STATUS_COR[ticket.status]}>
-          {STATUS_LABEL[ticket.status]}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge className={STATUS_COR[ticket.status]}>
+            {STATUS_LABEL[ticket.status]}
+          </Badge>
+          {podeExcluir && (
+            <Button variant="danger" onClick={excluir}>
+              Excluir
+            </Button>
+          )}
+        </div>
       </div>
 
       <Card className="mb-6 p-5">

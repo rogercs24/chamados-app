@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
   Param,
   Patch,
   Post,
@@ -40,6 +42,7 @@ import {
   UploadedFileLike,
 } from './use-cases/respond-ticket.use-case';
 import { GetAttachmentUseCase } from './use-cases/get-attachment.use-case';
+import { DeleteTicketUseCase } from './use-cases/delete-ticket.use-case';
 
 @ApiTags('tickets')
 @ApiBearerAuth()
@@ -53,6 +56,7 @@ export class TicketsController {
     private readonly updateStatus: UpdateStatusUseCase,
     private readonly respondTicket: RespondTicketUseCase,
     private readonly getAttachment: GetAttachmentUseCase,
+    private readonly deleteTicket: DeleteTicketUseCase,
   ) {}
 
   @ApiOperation({ summary: 'Abre um chamado (entra em triagem)' })
@@ -112,6 +116,14 @@ export class TicketsController {
     @CurrentUser() actor: AuthenticatedUser,
   ) {
     return this.respondTicket.execute(id, dto, actor, files ?? []);
+  }
+
+  @ApiOperation({ summary: 'Exclui um chamado (gestão)' })
+  @Roles(Papel.SUPER_ADMIN, Papel.ADMIN)
+  @Delete(':id')
+  @HttpCode(204)
+  async remove(@Param('id') id: string, @CurrentUser() actor: AuthenticatedUser) {
+    await this.deleteTicket.execute(id, actor);
   }
 
   @ApiOperation({ summary: 'Baixa um anexo de resposta (com verificação de acesso)' })
