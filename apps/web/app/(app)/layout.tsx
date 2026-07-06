@@ -40,6 +40,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     (n) => n.papeis === '*' || n.papeis.includes(user.papel),
   );
 
+  // Página inicial: dashboard para a equipe; chamados para quem só abre chamado.
+  const inicio = ['SUPER_ADMIN', 'ADMIN', 'TRIAGEM'].includes(user.papel)
+    ? '/dashboard'
+    : '/chamados';
+
   return (
     <div className="relative flex min-h-screen">
       {/* Fundo Sinka (sutil, sob toda a área do app) */}
@@ -54,12 +59,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       </div>
 
       <aside className="hidden w-60 flex-col border-r border-slate-200 bg-white/85 p-4 backdrop-blur md:flex">
-        <div className="mb-6 flex items-center gap-2 px-2">
+        <Link
+          href={inicio}
+          className="mb-6 flex items-center gap-2 rounded-lg px-2 py-1 transition hover:bg-slate-100"
+        >
           <div className="grid h-8 w-8 place-items-center rounded-lg bg-[#7cb342] text-sm font-bold text-white">
             C
           </div>
           <span className="font-semibold text-slate-900">Chamados Sinka</span>
-        </div>
+        </Link>
         <nav className="flex-1 space-y-1">
           {itens.map((n) => {
             const ativo = pathname.startsWith(n.href);
